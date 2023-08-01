@@ -7,18 +7,17 @@ import os
 import numpy as np
 import sys
 sys.path.insert(0,'/home/wangs1/')
-from CIFAR_BP import CIFAR_BP
+from dataset.CIFAR import CIFAR
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 import torchmetrics
 import matplotlib.pyplot as plt
 import pickle
 import torch.fft as fft
-# from pytorch_lightning import metrics
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from pytorch_lightning.loggers.tensorboard import TensorBoardLogger
 import backbone.resnet as resnet
-
+from blocks.resnet.Blocks import BasicBlock,Bottleneck
 
 
 
@@ -62,7 +61,7 @@ class White_Mask(object):
         return x
 
 class Model(pl.LightningModule):
-    def __init__(self,backbone_model, lr,num_class,dataset,image_size, band, masks, p , special=None):
+    def __init__(self,backbone_model, lr,num_class,dataset, masks, p):
         super(Model, self).__init__()
         self.save_hyperparameters()
         self.lr = lr
@@ -71,14 +70,10 @@ class Model(pl.LightningModule):
         self.test_acc = torchmetrics.Accuracy(task='multiclass', num_classes=10)
         self.dataset = dataset
         self.num_class = num_class
-        self.image_size = image_size
         self.backbone_model = backbone_model
-
-
         self.p = p
         self.masks = masks
-        self.band = band
-        self.special = special
+    
     def forward(self, x):
 
         prediction = self.backbone_model(x)
@@ -89,9 +84,8 @@ class Model(pl.LightningModule):
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(self.parameters(), self.lr,
                                 momentum=0.9, nesterov=True,
-                                weight_decay=1e-4)#torch.optim.Adam(self.parameters(), lr=self.lr,weight_decay=5e-04)
-        # scheduler = StepLR(optimizer,step_size=20)
-        scheduler = ReduceLROnPlateau(optimizer, mode='min',verbose=True, factor=0.1)#, step_size=2, gamma=0.95)
+                                weight_decay=1e-4) 
+        scheduler = ReduceLROnPlateau(optimizer, mode='min',verbose=True, factor=0.1)
         return {'optimizer': optimizer, 
                 'lr_scheduler':scheduler,
                 'monitor': 'val_loss'}
@@ -101,7 +95,7 @@ class Model(pl.LightningModule):
         img = x[2].cpu().numpy().transpose((1,2,0))
         plt.figure()
         plt.imshow((img-np.min(img))/(np.max(img)-np.min(img)))
-        plt.savefig('test.png')
+        plt.savefig('test.png') # save an augmented image
         plt.close()
 
         criterion1 = nn.CrossEntropyLoss()
@@ -179,17 +173,14 @@ class Model(pl.LightningModule):
             transform_train = transforms.Compose([
                 transforms.Pad(4),
                 transforms.RandomHorizontalFlip(),
-                transforms.RandomResizedCrop(self.image_size),
-                transforms.AugMix(), #transforms.AutoAugment(policy=transforms.AutoAugmentPolicy.CIFAR10 ), #
+                transforms.RandomResizedCrop(32),
+                # transforms.AugMix(), #transforms.AutoAugment(policy=transforms.AutoAugmentPolicy.CIFAR10 ), # comment this to use different other augmentation techniques
                 transforms.ToTensor(),
                 transforms.Normalize(mean, std)
             ])
             transform=transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean, std)])
-            data_train  = CIFAR_BP('../datasets/',train=True,band=self.band,transform=transform_train,extra_transform=extra_transform,extra_transformb = None)
-            data_test = CIFAR_BP('../datasets',train=False,band=self.band,transform=transform)
-
-        
-       
+            data_train  = CIFAR('../datasets/',train=True,transform=transform_train,extra_transform=extra_transform)
+            data_test = CIFAR('../datasets',train=False,transform=transform)
        
         # train/val split
         data_train2, data_val =  torch.utils.data.random_split(data_train, [int(len(data_train)*0.9), len(data_train)-int(len(data_train)*0.9)])
@@ -201,39 +192,32 @@ class Model(pl.LightningModule):
 
     
     def train_dataloader(self):
-        return torch.utils.data.DataLoader(self.train_dataset, batch_size=64, shuffle=True)#,num_workers=2)
+        return torch.utils.data.DataLoader(self.train_dataset, batch_size=64, shuffle=True)
 
     def test_dataloader(self):
-        return torch.utils.data.DataLoader(self.test_dataset, batch_size= 64, shuffle=False)#,num_workers=2)
+        return torch.utils.data.DataLoader(self.test_dataset, batch_size= 64, shuffle=False)
 
     def val_dataloader(self):
-        return torch.utils.data.DataLoader(self.val_dataset, batch_size= 64)#,num_workers=2)
+        return torch.utils.data.DataLoader(self.val_dataset, batch_size= 64)
 
 
 def main(args):
-    backbone = ['resnet9','resnet18', 'resnet50','resnet101','densenet121', 'densent169', 'vgg16'] 
     print(torch.cuda.device_count())
     if args.backbone_model == 'resnet18':
-        from blocks.resnet.Blocks import BasicBlock
         backbone_model = resnet.ResNet(BasicBlock,[2,2,2,2],args.num_class)
     elif args.backbone_model == 'resnet34':
-        from blocks.resnet.Blocks import BasicBlock
         backbone_model = resnet.ResNet(BasicBlock, [3,4,6,3],args.num_class)
     elif args.backbone_model == 'resnet50':
-        from blocks.resnet.Blocks import Bottleneck
         backbone_model = resnet.ResNet(Bottleneck,[3,4,6,3],args.num_class)
     elif args.backbone_model == 'resnet101':
-        from blocks.resnet.Blocks import Bottleneck
         backbone_model = resnet.ResNet(Bottleneck[3,4,23,3],args.num_class)
     
 
     
     
-    logger = TensorBoardLogger(args.save_dir, name=args.backbone_model+ args.band)#
-    
-    model = Model(backbone_model, args.lr,args.num_class,args.dataset,args.image_size,args.band,args.masks, args.p, args.special)#
+    logger = TensorBoardLogger(args.save_dir, name=args.backbone_model)
+    model = Model(backbone_model, args.lr,args.num_class,args.dataset,args.masks, args.p)
     maxepoch = 200
- 
     checkpoints_callback = ModelCheckpoint(save_last=True) 
     trainer = pl.Trainer(enable_progress_bar=False,logger=logger, callbacks=[checkpoints_callback], gpus=-1, max_epochs=maxepoch)  
     trainer.fit(model)
@@ -247,25 +231,17 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Write parameters')
     parser.add_argument('--backbone_model', type=str,
                     help='backbone_model')
-    parser.add_argument('--image_size', type=int, default= 32,
-                    help='size of images in dataset')
     parser.add_argument('--num_class', type=int, default= 10,
                     help='number of classes in dataset')
     parser.add_argument('--dataset', type=str, default='cifar',
                     help='dataset')
-    parser.add_argument('--weight_alpha', type=float, default=0.5,
-                    help='weight of classification loss')
     parser.add_argument('--lr', type=float, default=0.001,
                     help='learning rate')            
     parser.add_argument('--save_dir', type=str, default='results/')
-    parser.add_argument('--band', type=str, default= '',
-                    help='band of frequency')
     parser.add_argument('--p', type=float, default= 0.3,
                     help='percentage of augmentations')
     parser.add_argument('--masks', type=str, default= 'alex.pkl',
                     help='Masks for filtering')
-    parser.add_argument('--special', type=str, default= '_complex_special_v2',
-                    help='band frequency bias')
    
     args = parser.parse_args()
     if not os.path.exists(args.save_dir):

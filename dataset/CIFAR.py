@@ -7,7 +7,7 @@ import torch
 
 class CIFAR(Dataset):
     def __init__(self, root_dir,train=True,transform = None, extra_transform = None):
-        super(CIFAR_BP).__init__()
+        super(CIFAR).__init__()
         if train is False:
             self.labels_path = os.path.join(root_dir,'CIFAR10','test_label.npy')
             self.root_dir = os.path.join(root_dir,'CIFAR10','test_data.npy')

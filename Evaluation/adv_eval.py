@@ -6,7 +6,6 @@ import art.attacks.evasion as evasion
 from art.estimators.classification import PyTorchClassifier
 from typing import Tuple, Optional
 from torch.utils.data import Dataset
-import os
 import numpy as np
 import torch
 import torchvision
@@ -15,11 +14,9 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
-import torch.nn.init as init
 
 import backbone.resnet as resnet
-from blocks.resnet.Blocks import Upconvblock
-from model_structure import Model
+from train import Model
 import argparse
 
 print(torch.cuda.is_available())
