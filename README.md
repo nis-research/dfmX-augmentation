@@ -1,4 +1,4 @@
-# Official website of '[DFM-X: Augmentation by Leveraging Prior Knowledge of Shortcut Learning](https://openreview.net/forum?id=NywSmrJ3Hr) (ICCV2023 Worshop VIPrios)' 
+# Official website of '[DFM-X: Augmentation by Leveraging Prior Knowledge of Shortcut Learning](https://openreview.net/forum?id=NywSmrJ3Hr) (ICCV2023 Workshop VIPrios)' 
 ---
 
 ## Introduction
@@ -69,12 +69,10 @@ python -u
 ## Citation
 
 ```
-@inproceedings{
-wang2023dfmx,
-title={{DFM}-X: Augmentation by Leveraging Prior Knowledge of Shortcut Learning},
+@inproceedings{wang2023dfmx,
+title={{DFM-X}: Augmentation by Leveraging Prior Knowledge of Shortcut Learning},
 author={Shunxin Wang and Christoph Brune and Raymond Veldhuis and Nicola Strisciuglio},
-booktitle={4th Visual Inductive Priors for Data-Efficient Deep Learning Workshop},
-year={2023},
-url={https://openreview.net/forum?id=NywSmrJ3Hr}
+booktitle={International Conference on Computer Vision Workshops (ICCVW)},
+year={2023}
 }
 ```
