@@ -228,7 +228,7 @@ def main(args):
 
     run_fgsm_experiment(models,epsilon,colors)
     run_pgd_experiment(models,epsilon,colors)    
-    # run_pgdl2_experiment(models,epsilon,colors)
+
 
 
 
