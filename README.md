@@ -1,4 +1,4 @@
-# Official website of '[DFM-X: Augmentation by Leveraging Prior Knowledge of Shortcut Learning](https://openreview.net/forum?id=NywSmrJ3Hr) (ICCV2023 Workshop VIPriors)' 
+# Official website of '[DFM-X: Augmentation by Leveraging Prior Knowledge of Shortcut Learning](https://openreview.net/forum?id=NywSmrJ3Hr) (ICCVW2023)' 
 ---
 
 ## Introduction
@@ -46,16 +46,16 @@ python -u Evaluation/verify_mask.py  --backbone_model resnet18  --model_path /ch
 python -u train.py   --backbone_model resnet18 --lr 0.01  --save_dir results/   --p 0.3  --masks  resnet18.pkl
 ```
 
-[//]: # * Evaluating adversarial robustness, e.g.
-[//]: # ```
-[//]: # python -u Evaluation/adv_eval.py --ckpt /checkpoints/last.ckpt 
+<!--* Evaluating adversarial robustness, e.g.
+```
+python -u Evaluation/adv_eval.py --ckpt /checkpoints/last.ckpt 
 
-[//]: # ```
+```
 
-[//]: # * Evaluating corruption robustness, e.g.
-[//]: # ```
-[//]: # python -u 
-[//]: # ```
+* Evaluating corruption robustness, e.g.
+```
+python -u 
+```-->
 
 
 
