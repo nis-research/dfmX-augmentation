@@ -46,16 +46,16 @@ python -u Evaluation/verify_mask.py  --backbone_model resnet18  --model_path /ch
 python -u train.py   --backbone_model resnet18 --lr 0.01  --save_dir results/   --p 0.3  --masks  resnet18.pkl
 ```
 
-% * Evaluating adversarial robustness, e.g.
-%```
-%python -u Evaluation/adv_eval.py --ckpt /checkpoints/last.ckpt 
+[//]: # * Evaluating adversarial robustness, e.g.
+[//]: # ```
+[//]: # python -u Evaluation/adv_eval.py --ckpt /checkpoints/last.ckpt 
 
-%```
+[//]: # ```
 
-%* Evaluating corruption robustness, e.g.
-%```
-%python -u 
-%```
+[//]: # * Evaluating corruption robustness, e.g.
+[//]: # ```
+[//]: # python -u 
+[//]: # ```
 
 
 
