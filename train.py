@@ -6,7 +6,7 @@ import torchvision.transforms as transforms
 import os
 import numpy as np
 import sys
-sys.path.insert(0,'/home/wangs1/')
+sys.path.insert(0,'/home/wangs1/dfmX-augmentation/')
 from dataset.CIFAR import CIFAR
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -42,7 +42,7 @@ class White_Mask(object):
       
     def __call__(self, x):
 
-        print(x.shape)
+        # print(x.shape)
         c, h, w = x.shape[-3:]
         assert c == 3
         assert h >= 1 or w >= 1
@@ -179,8 +179,8 @@ class Model(pl.LightningModule):
                 transforms.Normalize(mean, std)
             ])
             transform=transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean, std)])
-            data_train  = CIFAR('../datasets/',train=True,transform=transform_train,extra_transform=extra_transform)
-            data_test = CIFAR('../datasets',train=False,transform=transform)
+            data_train  = CIFAR('./dataset/',train=True,transform=transform_train,extra_transform=extra_transform)
+            data_test = CIFAR('./dataset/',train=False,transform=transform)
        
         # train/val split
         data_train2, data_val =  torch.utils.data.random_split(data_train, [int(len(data_train)*0.9), len(data_train)-int(len(data_train)*0.9)])

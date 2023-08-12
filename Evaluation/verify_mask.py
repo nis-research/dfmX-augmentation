@@ -27,7 +27,7 @@ def main(args):
     mean = [0.491400, 0.482158, 0.446531]
     std = [0.247032, 0.243485, 0.261588]
     transform=transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean, std)])
-    data_test = CIFAR('../datasets',train=False,transform=transform)
+    data_test = CIFAR('./dataset',train=False,transform=transform)
     test_loader = torch.utils.data.DataLoader(data_test, batch_size= 1000, shuffle=False,num_workers=2)
 
     total = 0
@@ -42,7 +42,7 @@ def main(args):
 
     batchsize = 32
     
-    testset = CIFAR('../datasets',train=False,transform=transform)
+    testset = CIFAR('./dataset',train=False,transform=transform)
     test_loader = torch.utils.data.DataLoader(dataset=testset, batch_size=batchsize, shuffle=False)
     
     with open(args.m_path+'.pkl', 'rb') as f:
@@ -52,7 +52,7 @@ def main(args):
         print('Using mask %d' %mask_i)
         mask = np.array(all[mask_i]) #map
         print(len(mask[mask==1]))
-        mat = np.zeros((10,10))
+        mat = torch.zeros((10,10))
         
         for x,y in test_loader:
             x1=x
@@ -64,18 +64,19 @@ def main(args):
                         F_x1[num_s,channel,:,:] = F_x1[num_s,channel,:,:] * mask                    
 
             x1 = fft.ifft2(fft.ifftshift(F_x1))
-            x1 = torch.real(x1)
-            x1 = torch.Tensor(x1).to(device)
+            x1 = torch.Tensor(x1)
+            x1 = torch.real(x1).to(device)
+            
             
             y_hat = encoder(x1)
             mat += confmat(y_hat.cpu(), y.cpu())
 
         print(mat) 
 
-        for cla in range(10):
-            print('Amount of degradation -- class %d' % cla)  
-            diff = (mat[cla,cla]-Matrix_org[cla,cla])/Matrix_org[cla,cla]
-            print(diff)
+         
+        print('Amount of degradation -- class %d' % mask_i)  
+        diff = (mat[mask_i,mask_i]-Matrix_org[mask_i,mask_i])/Matrix_org[mask_i,mask_i]
+        print(diff)
           
     
         

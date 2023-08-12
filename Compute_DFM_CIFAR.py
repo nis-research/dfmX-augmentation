@@ -1,6 +1,6 @@
-import sys
 import os
-sys.path.insert(0,'/home/wangs1/')
+import sys
+sys.path.insert(0,'/home/wangs1/dfmX-augmentation/')
 from dataset.CIFAR import CIFAR
 import torch
 import numpy as np
@@ -43,7 +43,7 @@ def main(args):
       print(Matrix_org)
       batchsize = 64
       transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean, std)])
-      testset = CIFAR('./datasets',train=False,transform=transform)
+      testset = CIFAR('./dataset',train=False,transform=transform)
       test_loader = torch.utils.data.DataLoader(dataset=testset, batch_size=batchsize, shuffle=False)
 
       result_prediction = {}
@@ -78,8 +78,9 @@ def main(args):
                                           F_x1[num_s,channel,:,:] = F_x1[num_s,channel,:,:] * mask                    
 
                               x1 = fft.ifft2(fft.ifftshift(F_x1))
-                              x1 = torch.real(x1)
                               x1 = torch.Tensor(x1).to(device)
+                              x1 = torch.real(x1)
+                              
                               
                               y_hat = encoder(x1)
                               _, predicted = torch.max(y_hat.data,1)
@@ -101,7 +102,7 @@ def main(args):
             re_importance[re_importance >0] = 1
             result_prediction.update({test_class:re_importance})
 
-      with open('./DFMs/'+args.backbone_model+str(args.t)+'.pkl', 'wb') as f:
+      with open('./DFMs/'+args.backbone_model+'_'+str(args.t)+'.pkl', 'wb') as f:
             pickle.dump(re_importance, f)
      
 

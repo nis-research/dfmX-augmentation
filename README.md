@@ -33,17 +33,17 @@ cd dfmX-augmentation
 * Computing DFMs of CIFAR for a pre-trained model, e.g.
 		
 ```
-python -u Compute_DFM_CIFAR.py  --backbone_model resnet18 --model_path /checkpoints/last.ckpt      
+python -u Compute_DFM_CIFAR.py  --backbone_model resnet18 --model_path checkpoints/last.ckpt      
 ```
 
 * Evalating perfomance of models when tested with only dominant frequencies, e.g. 
 ```
-python -u Evaluation/verify_mask.py  --backbone_model resnet18  --model_path /checkpoints/last.ckpt  --m_path  resnet18.pkl
+python -u Evaluation/verify_mask.py  --backbone_model resnet18  --model_path checkpoints/last.ckpt  --m_path  ./DFMs/resnet18
 ```
 
 * Training models with DFM-X, e.g. 
 ```
-python -u train.py   --backbone_model resnet18 --lr 0.01  --save_dir results/   --p 0.3  --masks  resnet18.pkl
+python -u train.py   --backbone_model resnet18 --lr 0.01  --save_dir results/   --p 0.3  --masks  ./DFMs/resnet18.pkl
 ```
 
 <!--* Evaluating adversarial robustness, e.g.
