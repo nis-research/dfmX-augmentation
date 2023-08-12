@@ -1,4 +1,4 @@
-# Official website of '[DFM-X: Augmentation by Leveraging Prior Knowledge of Shortcut Learning](https://openreview.net/forum?id=NywSmrJ3Hr) (ICCV2023 Workshop VIPrios)' 
+# Official website of '[DFM-X: Augmentation by Leveraging Prior Knowledge of Shortcut Learning](https://openreview.net/forum?id=NywSmrJ3Hr) (ICCV2023 Workshop VIPriors)' 
 ---
 
 ## Introduction
@@ -36,26 +36,26 @@ cd dfmX-augmentation
 python -u Compute_DFM_CIFAR.py  --backbone_model resnet18 --model_path /checkpoints/last.ckpt      
 ```
 
-* Evalating perfomance of models when tested with only dominant frequencies
+* Evalating perfomance of models when tested with only dominant frequencies, e.g. 
 ```
-python -u Evaluation/verify_mask.py 
+python -u Evaluation/verify_mask.py  --backbone_model resnet18  --model_path /checkpoints/last.ckpt  --m_path  resnet18.pkl
 ```
 
 * Training models with DFM-X, e.g. 
-	```
-	python -u train.py   --backbone_model resnet18 --lr 0.01 --dataset cifar   --save_dir results/   
-	```
-
-* Evaluating adversarial robustness, e.g.
 ```
-python -u Evaluation/adv_eval.py --ckpt /checkpoints/last.ckpt 
-
+python -u train.py   --backbone_model resnet18 --lr 0.01  --save_dir results/   --p 0.3  --masks  resnet18.pkl
 ```
 
-* Evaluating corruption robustness, e.g.
-```
-python -u 
-```
+% * Evaluating adversarial robustness, e.g.
+%```
+%python -u Evaluation/adv_eval.py --ckpt /checkpoints/last.ckpt 
+
+%```
+
+%* Evaluating corruption robustness, e.g.
+%```
+%python -u 
+%```
 
 
 
