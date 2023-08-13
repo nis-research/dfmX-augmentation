@@ -103,7 +103,7 @@ def main(args):
             result_prediction.update({test_class:re_importance})
 
       with open('./DFMs/'+args.backbone_model+'_'+str(args.t)+'.pkl', 'wb') as f:
-            pickle.dump(re_importance, f)
+            pickle.dump(result_prediction, f)
      
 
 if __name__ == '__main__':
